@@ -1,66 +1,66 @@
 # Train Colab Classification
 
-Google Colab notebook for training image classification models from a public dataset URL and sending the result back to a Label Forge backend.
+Notebook Google Colab dùng để train mô hình phân loại ảnh từ một URL dataset public và gửi kết quả train về backend Label Forge.
 
-## Overview
+## Tổng quan
 
-This repository contains a Colab-based training workflow in `train_classification_notebook.ipynb`.
+Repo này chứa workflow train trong file `train_classification_notebook.ipynb`.
 
-The notebook is designed to:
+Notebook được dùng để:
 
-- Receive training parameters from Label Forge.
-- Validate that dataset and callback URLs are public.
-- Install training dependencies.
-- Download and extract the dataset.
-- Train a YOLO model with Ultralytics.
-- Evaluate the trained model.
-- Generate sample predictions.
-- Upload `best.pt` back through the backend.
-- Send final training metrics to the callback URL.
+- Nhận tham số train từ Label Forge.
+- Kiểm tra `DATASET_URL` và `CALLBACK_URL` có phải URL public không.
+- Cài đặt các thư viện cần thiết.
+- Tải và giải nén dataset.
+- Train mô hình YOLO bằng Ultralytics.
+- Đánh giá mô hình sau khi train.
+- Tạo một số ảnh dự đoán mẫu.
+- Upload file `best.pt` về backend.
+- Gửi metrics và trạng thái train về `CALLBACK_URL`.
 
-## Main File
+## File chính
 
-| File | Purpose |
+| File | Chức năng |
 | --- | --- |
-| `train_classification_notebook.ipynb` | Main Google Colab notebook for dataset download, training, evaluation, upload, and callback. |
+| `train_classification_notebook.ipynb` | Notebook chính để tải dataset, train, đánh giá, upload model và gửi callback. |
 
-## Requirements
+## Yêu cầu
 
-The notebook installs its Python dependencies automatically in Colab:
+Notebook sẽ tự cài các thư viện Python cần thiết trong Colab:
 
 ```bash
 ultralytics torch torchvision requests gdown pyyaml
 ```
 
-Recommended runtime:
+Runtime khuyến nghị:
 
 - Google Colab
-- GPU runtime enabled
-- Public dataset download URL
-- Public backend callback URL
+- Bật GPU runtime
+- Dataset URL public
+- Backend callback URL public
 
-## Training Parameters
+## Tham số train
 
-The first notebook cell exposes the main parameters:
+Cell đầu tiên của notebook có các tham số chính:
 
-| Parameter | Description |
+| Tham số | Mô tả |
 | --- | --- |
-| `JOB_ID` | Training job identifier from the backend. |
-| `DATASET_URL` | Public URL to the dataset zip file. |
-| `CALLBACK_URL` | Public callback endpoint used to send training results. |
-| `ARCHITECTURE` | YOLO model size, for example `yolov8n`, `yolov8s`, `yolov8m`, `yolov8l`, or `yolov8x`. |
-| `EPOCHS` | Number of training epochs. |
-| `IMAGE_SIZE` | Input image size. |
-| `BATCH_SIZE` | Training batch size. |
-| `LEARNING_RATE` | Initial learning rate. |
-| `PATIENCE` | Early stopping patience. |
-| `DEVICE` | Colab device, usually `0` for GPU. |
+| `JOB_ID` | Mã job train từ backend. |
+| `DATASET_URL` | URL public trỏ tới file dataset dạng zip. |
+| `CALLBACK_URL` | Endpoint public để nhận kết quả train. |
+| `ARCHITECTURE` | Kích thước model YOLO, ví dụ `yolov8n`, `yolov8s`, `yolov8m`, `yolov8l`, hoặc `yolov8x`. |
+| `EPOCHS` | Số epoch train. |
+| `IMAGE_SIZE` | Kích thước ảnh đầu vào. |
+| `BATCH_SIZE` | Batch size khi train. |
+| `LEARNING_RATE` | Learning rate ban đầu. |
+| `PATIENCE` | Số epoch chờ trước khi early stopping. |
+| `DEVICE` | Thiết bị train, thường là `0` nếu dùng GPU Colab. |
 
-The notebook also includes augmentation and optimizer settings such as `OPTIMIZER`, `MOSAIC`, `MIXUP`, `FLIPLR`, `HSV_H`, `HSV_S`, and others.
+Notebook cũng có thêm các tham số optimizer và augmentation như `OPTIMIZER`, `MOSAIC`, `MIXUP`, `FLIPLR`, `HSV_H`, `HSV_S` và một số tham số khác.
 
-## Dataset Format
+## Cấu trúc dataset
 
-For classification training, the extracted dataset should normally look like this:
+Với bài toán classification, sau khi giải nén dataset thường cần có cấu trúc:
 
 ```text
 dataset/
@@ -77,22 +77,22 @@ dataset/
     class_b/
 ```
 
-If the dataset uses `valid/`, the notebook renames it to `val/` because Ultralytics classification training expects the validation folder to be named `val`.
+Nếu dataset dùng thư mục `valid/`, notebook sẽ đổi tên thành `val/` vì Ultralytics classification yêu cầu thư mục validation tên là `val`.
 
-For detection datasets, the notebook checks for `data.yaml`.
+Với dataset detection, notebook sẽ kiểm tra file `data.yaml`.
 
-## How To Run
+## Cách chạy
 
-1. Open `train_classification_notebook.ipynb` in Google Colab.
-2. Enable GPU runtime.
-3. Fill in `JOB_ID`, `DATASET_URL`, and `CALLBACK_URL`.
-4. Adjust model and training parameters if needed.
-5. Run all cells from top to bottom.
-6. Wait for training to complete and for the callback request to be sent.
+1. Mở `train_classification_notebook.ipynb` bằng Google Colab.
+2. Bật GPU runtime.
+3. Điền `JOB_ID`, `DATASET_URL` và `CALLBACK_URL`.
+4. Điều chỉnh model và tham số train nếu cần.
+5. Chạy toàn bộ các cell từ trên xuống dưới.
+6. Chờ quá trình train hoàn tất và callback được gửi về backend.
 
-## Public URL Requirement
+## Yêu cầu URL public
 
-`DATASET_URL` and `CALLBACK_URL` must not point to localhost addresses such as:
+`DATASET_URL` và `CALLBACK_URL` không được là địa chỉ localhost như:
 
 ```text
 localhost
@@ -100,27 +100,27 @@ localhost
 0.0.0.0
 ```
 
-If running the backend locally, expose it with a public tunnel such as Cloudflare Tunnel, then use the generated HTTPS URL.
+Nếu backend đang chạy local, hãy expose backend bằng tunnel public, ví dụ Cloudflare Tunnel, rồi dùng URL HTTPS được tạo ra.
 
-## Git Push Note
+## Ghi chú lỗi push Git
 
-If a commit was removed locally with `git reset --hard` and GitHub still has that commit, a normal push can fail with:
+Nếu đã xóa commit local bằng `git reset --hard` nhưng GitHub vẫn còn commit đó, khi push có thể gặp lỗi:
 
 ```text
 rejected non-fast-forward
 ```
 
-To keep the GitHub history and integrate remote changes:
+Nếu muốn giữ lịch sử trên GitHub và lấy thay đổi remote về local:
 
 ```bash
 git pull --rebase origin main
 git push origin main
 ```
 
-To intentionally make GitHub match the local branch after a reset:
+Nếu muốn GitHub khớp với branch local sau khi reset:
 
 ```bash
 git push --force-with-lease origin main
 ```
 
-Use `--force-with-lease` only when you are sure the remote commit should be removed.
+Chỉ dùng `--force-with-lease` khi chắc chắn muốn xóa commit mới hơn trên remote.
